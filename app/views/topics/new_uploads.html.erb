@@ -1,0 +1,29 @@
+<div class="max-w-7xl mx-auto">
+  <%= render "shared/navigation" %>
+
+  <div class="mt-6">
+    <%= link_to "&larr; Back to browsing".html_safe, root_path, class: "text-indigo-600 hover:text-indigo-800 text-sm" %>
+
+    <div class="bg-white shadow rounded-lg p-6 mt-4">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+          <svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          <h1 class="text-xl font-semibold text-gray-900">New Uploads</h1>
+        </div>
+        <span class="text-sm text-gray-500">Last 30 days | <%= @topics.count %> topics</span>
+      </div>
+
+      <div class="space-y-4">
+        <% @topics.each do |topic| %>
+          <%= render "topics/topic_card", topic: topic, show_favorite: true %>
+        <% end %>
+      </div>
+
+      <% if @topics.empty? %>
+        <p class="text-gray-500 text-center py-8">No new uploads in the last 30 days.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
