@@ -35,7 +35,7 @@ module Authentication
   private
 
   def store_location
-    session[:return_to] = request.fullpath if request.get?
+    session[:return_to] = request.fullpath if request.get? || request.head?
   end
 
   def stored_location_or(default)

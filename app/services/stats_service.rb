@@ -139,14 +139,38 @@ class StatsService
 
   # Helper to group by day (simple implementation without groupdate gem)
   def group_by_day(relation, column)
-    relation.group("DATE(#{column})")
+    relation.group(date_sql_for_column(column))
+  end
+
+  # Return pre-defined SQL for allowed columns to prevent SQL injection
+  # No string interpolation - each column has a literal SQL expression
+  DATE_SQL_EXPRESSIONS = {
+    "created_at" => Arel.sql("DATE(created_at)"),
+    "updated_at" => Arel.sql("DATE(updated_at)")
+  }.freeze
+
+  def date_sql_for_column(column)
+    column_name = column.to_s
+    DATE_SQL_EXPRESSIONS.fetch(column_name) do
+      raise ArgumentError, "Invalid column for date grouping: #{column_name}"
+    end
   end
 end
 
 # Extend ActiveRecord to add group_by_day if groupdate gem is not available
 module GroupByDayExtension
+  # Pre-defined SQL expressions for allowed columns (no interpolation)
+  DATE_SQL_EXPRESSIONS = {
+    "created_at" => Arel.sql("DATE(created_at)"),
+    "updated_at" => Arel.sql("DATE(updated_at)")
+  }.freeze
+
   def group_by_day(column)
-    group("DATE(#{column})")
+    column_name = column.to_s
+    sql_expr = DATE_SQL_EXPRESSIONS.fetch(column_name) do
+      raise ArgumentError, "Invalid column for date grouping: #{column_name}"
+    end
+    group(sql_expr)
   end
 end
 
