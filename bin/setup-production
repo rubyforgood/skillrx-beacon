@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Production Setup Script for SkillRx Clinical Edge
+# Production Setup Script for SkillRx Beacon
 #
 # This script sets up the application for production deployment
 # on a Raspberry Pi or similar mini computer.
@@ -18,7 +18,7 @@ set -e
 APP_DIR="/opt/skillrx"
 CURRENT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-echo "=== SkillRx Clinical Edge Production Setup ==="
+echo "=== SkillRx Beacon Production Setup ==="
 echo ""
 
 # Check if running as root for system-level setup

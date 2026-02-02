@@ -1,4 +1,4 @@
-# Makefile for SkillRx Clinical Edge deployment tasks
+# Makefile for SkillRx Beacon deployment tasks
 #
 # Usage:
 #   make build        - Build Docker image
@@ -12,12 +12,12 @@
 .PHONY: build up down logs shell db-prepare import test clean help
 
 # Docker image name
-IMAGE_NAME ?= skillrx-clinical-edge
+IMAGE_NAME ?= skillrx-beacon
 DOCKER_COMPOSE ?= docker compose
 
 # Default target
 help:
-	@echo "SkillRx Clinical Edge - Deployment Tasks"
+	@echo "SkillRx Beacon - Deployment Tasks"
 	@echo ""
 	@echo "Docker Commands:"
 	@echo "  make build       - Build Docker image"

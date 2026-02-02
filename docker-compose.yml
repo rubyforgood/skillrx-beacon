@@ -1,4 +1,4 @@
-# Docker Compose for SkillRx Clinical Edge
+# Docker Compose for SkillRx Beacon
 #
 # Usage:
 #   Development:  docker compose up

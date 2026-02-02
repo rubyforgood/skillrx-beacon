@@ -1,4 +1,4 @@
-# systemd service file for SkillRx Clinical Edge
+# systemd service file for SkillRx Beacon
 #
 # Installation:
 #   sudo cp config/skillrx.service /etc/systemd/system/
@@ -12,8 +12,8 @@
 #   sudo journalctl -u skillrx -f    # View logs
 
 [Unit]
-Description=SkillRx Clinical Edge - Medical Content Application
-Documentation=https://github.com/RubyForGood/skillrx-clinical_edge
+Description=SkillRx Beacon - Medical Content Application
+Documentation=https://github.com/RubyForGood/skillrx-beacon
 After=network.target
 
 [Service]
