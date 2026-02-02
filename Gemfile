@@ -25,7 +25,17 @@ group :development, :test do
   gem "brakeman", require: false
   gem "bundler-audit", require: false
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "rspec-rails"
   gem "rubocop-rails-omakase", require: false
+end
+
+group :test do
+  gem "capybara"
+  gem "database_cleaner"
+  gem "selenium-webdriver"
+  gem "shoulda-matchers"
 end
 
 group :development do
