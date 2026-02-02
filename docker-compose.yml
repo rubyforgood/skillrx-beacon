@@ -1,0 +1,42 @@
+# Docker Compose for SkillRx Clinical Edge
+#
+# Usage:
+#   Development:  docker compose up
+#   Production:   docker compose -f docker-compose.yml -f docker-compose.production.yml up -d
+#
+# Build:
+#   docker compose build
+#
+# First-time setup:
+#   docker compose run --rm web bin/rails db:prepare
+#   docker compose run --rm web bin/rails data:import_content
+
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT:-3000}:80"
+    environment:
+      - RAILS_ENV=${RAILS_ENV:-production}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - SOLID_QUEUE_IN_PUMA=1
+    volumes:
+      # Persist SQLite databases
+      - storage:/rails/storage
+      # Persist ActiveStorage uploads
+      - uploads:/rails/storage/uploads
+      # Mount content directory (medical content files)
+      - ${CONTENT_PATH:-./content}:/rails/content:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  storage:
+    driver: local
+  uploads:
+    driver: local
