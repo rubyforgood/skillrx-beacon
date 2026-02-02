@@ -1,24 +1,55 @@
-# README
+# SkillRx Beacon
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+SkillRx Beacon is a Ruby on Rails API application that manages content synchronisation for edge devices (Beacons) deployed in low-resource medical settings. It replaces the existing Azure-based distribution system with direct device-to-CMS communication.
 
-Things you may want to cover:
+Beacons are physical devices deployed in healthcare facilities globally that broadcast local Wi-Fi networks, allowing healthcare workers to access training materials via their phones without internet connectivity. This application handles device registration, content assignment, and sync orchestration.
 
-* Ruby version
+# Ruby for Good
 
-* System dependencies
+SkillRx Beacon is one of many projects initiated and run by Ruby for Good. You can find out more about Ruby for Good at https://rubyforgood.org.
 
-* Configuration
+# Welcome Contributors!
 
-* Database creation
+[Contribution guidelines for this project](CONTRIBUTING.md)
 
-* Database initialization
+# Install & Setup
 
-* How to run the test suite
+Clone the codebase
+```
+git clone git@github.com:rubyforgood/skillrx-beacon.git
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Run the setup script to prepare the DB and assets
+```sh
+bin/setup
+```
 
-* Deployment instructions
+To run the app locally, use:
+```
+bin/dev
+```
 
-* ...
+# Running specs
+
+```sh
+# Default: Run all spec files
+$ bundle exec rspec
+
+# Run all spec files in a single directory
+$ bundle exec rspec spec/models
+
+# Run a single spec file
+$ bundle exec rspec spec/requests/api/v1/devices_spec.rb
+
+# See all options for running specs
+$ bundle exec rspec --help
+```
+
+# Testing
+
+This project uses:
+* `rspec` for testing
+* `shoulda-matchers` for expectations
+* `factory_bot` for making records
+
+To run tests, simply use `bin/rspec`.
