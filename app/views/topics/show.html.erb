@@ -1,0 +1,107 @@
+<div class="max-w-7xl mx-auto">
+  <%= render "shared/navigation" %>
+
+  <div class="mt-6">
+    <%= link_to "&larr; Back to browsing".html_safe, :back, class: "text-indigo-600 hover:text-indigo-800 text-sm" %>
+
+    <div class="bg-white shadow rounded-lg mt-4 overflow-hidden">
+      <div class="p-6">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center text-sm text-gray-500 mb-2">
+              <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-medium">
+                <%= @topic.content_provider.name %>
+              </span>
+              <span class="mx-2">|</span>
+              <span><%= @topic.year %> - <%= @topic.month %></span>
+              <% if @topic.volume.present? %>
+                <span class="mx-2">|</span>
+                <span>Vol. <%= @topic.volume %>, Issue <%= @topic.issue %></span>
+              <% end %>
+            </div>
+
+            <h1 class="text-2xl font-bold text-gray-900 mb-4"><%= @topic.title %></h1>
+
+            <% if @topic.authors.any? %>
+              <div class="flex items-center text-gray-600 mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span><%= @topic.authors.map(&:name).join(", ") %></span>
+              </div>
+            <% end %>
+
+            <% if @topic.tags.any? %>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <% @topic.tags.each do |tag| %>
+                  <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                    <%= tag.name %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <% if user_signed_in? %>
+            <div id="favorite_button_<%= @topic.id %>">
+              <%= render "topics/favorite_button", topic: @topic, is_favorite: @is_favorite %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="border-t pt-4 mt-4">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Available Files</h2>
+
+          <div class="space-y-3">
+            <% @topic.topic_files.each do |file| %>
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                  <% if file.file_type == "mp3" %>
+                    <svg class="w-8 h-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                  <% else %>
+                    <svg class="w-8 h-8 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  <% end %>
+
+                  <div>
+                    <p class="font-medium text-gray-900"><%= file.filename %></p>
+                    <p class="text-sm text-gray-500">
+                      <%= file.file_type.upcase %> |
+                      <%= number_to_human_size(file.file_size) if file.file_size %>
+                    </p>
+                  </div>
+                </div>
+
+                <% if file.file_type == "mp3" %>
+                  <%= link_to audio_topic_file_path(file),
+                      class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700" do %>
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    Play Audio
+                  <% end %>
+                <% else %>
+                  <%= link_to pdf_topic_file_path(file),
+                      class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700" do %>
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View PDF
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="border-t pt-4 mt-4 text-sm text-gray-500">
+          <span>Views: <%= @topic.view_count %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

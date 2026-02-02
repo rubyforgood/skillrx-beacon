@@ -1,0 +1,117 @@
+<div class="max-w-6xl mx-auto" data-controller="pdf-viewer" data-pdf-viewer-url-value="<%= @topic_file.file.attached? ? rails_blob_path(@topic_file.file, disposition: 'inline') : '' %>">
+  <%= render "shared/navigation" %>
+
+  <div class="mt-6">
+    <%= link_to "&larr; Back to topic".html_safe, topic_path(@topic), class: "text-indigo-600 hover:text-indigo-800 text-sm" %>
+
+    <div class="bg-white shadow rounded-lg mt-4 overflow-hidden">
+      <!-- Topic info header -->
+      <div class="p-4 border-b flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <div>
+            <h1 class="text-lg font-bold text-gray-900"><%= @topic.title %></h1>
+            <p class="text-sm text-gray-500"><%= @topic_file.filename %></p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <% if user_signed_in? %>
+            <div id="favorite_button_<%= @topic.id %>">
+              <%= render "topics/favorite_button", topic: @topic, is_favorite: @is_favorite %>
+            </div>
+          <% end %>
+
+          <% unless mobile_device? %>
+            <% if @topic_file.file.attached? %>
+              <%= link_to rails_blob_path(@topic_file.file, disposition: "attachment"),
+                  class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50",
+                  download: @topic_file.filename do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- PDF Controls -->
+      <div class="p-3 bg-gray-100 border-b flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <button
+            data-action="click->pdf-viewer#previousPage"
+            class="p-2 rounded hover:bg-gray-200"
+            title="Previous page"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <span class="text-sm text-gray-600">
+            Page <span data-pdf-viewer-target="currentPage">1</span> of <span data-pdf-viewer-target="totalPages">-</span>
+          </span>
+
+          <button
+            data-action="click->pdf-viewer#nextPage"
+            class="p-2 rounded hover:bg-gray-200"
+            title="Next page"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button
+            data-action="click->pdf-viewer#zoomOut"
+            class="p-2 rounded hover:bg-gray-200"
+            title="Zoom out"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </svg>
+          </button>
+
+          <span data-pdf-viewer-target="zoomLevel" class="text-sm text-gray-600 w-16 text-center">100%</span>
+
+          <button
+            data-action="click->pdf-viewer#zoomIn"
+            class="p-2 rounded hover:bg-gray-200"
+            title="Zoom in"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- PDF Container -->
+      <div class="bg-gray-800 min-h-screen" oncontextmenu="return false;">
+        <!-- Loading indicator -->
+        <div data-pdf-viewer-target="loading" class="flex justify-center py-16">
+          <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+
+        <!-- PDF Canvas Container -->
+        <div data-pdf-viewer-target="container" class="hidden flex flex-col items-center py-4 space-y-4">
+        </div>
+
+        <!-- Error message -->
+        <div data-pdf-viewer-target="error" class="hidden text-center py-16">
+          <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p class="text-white text-lg">Failed to load PDF</p>
+          <p class="text-gray-400 text-sm mt-2">Please try again or download the file.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

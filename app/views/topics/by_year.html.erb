@@ -1,0 +1,41 @@
+<%= turbo_frame_tag "topics_content" do %>
+  <div class="bg-white shadow rounded-lg p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold text-gray-900">
+        <%= @year %>
+        <% if @month.present? %>
+          - <%= @month %>
+        <% end %>
+      </h2>
+      <span class="text-sm text-gray-500"><%= @topics.count %> topics</span>
+    </div>
+
+    <% if @months.any? && @month.blank? %>
+      <div class="flex flex-wrap gap-2 mb-6">
+        <% @months.each do |month| %>
+          <%= link_to month,
+              by_year_topics_path(year: @year, month: month),
+              class: "px-3 py-1 bg-gray-100 hover:bg-indigo-100 text-gray-700 hover:text-indigo-700 rounded-full text-sm",
+              data: { turbo_frame: "topics_content" } %>
+        <% end %>
+      </div>
+    <% elsif @month.present? %>
+      <div class="mb-4">
+        <%= link_to "&larr; All months in #{@year}".html_safe,
+            by_year_topics_path(year: @year),
+            class: "text-indigo-600 hover:text-indigo-800 text-sm",
+            data: { turbo_frame: "topics_content" } %>
+      </div>
+    <% end %>
+
+    <div class="space-y-4">
+      <% @topics.each do |topic| %>
+        <%= render "topics/topic_card", topic: topic, show_favorite: true %>
+      <% end %>
+    </div>
+
+    <% if @topics.empty? %>
+      <p class="text-gray-500 text-center py-8">No topics found for this period.</p>
+    <% end %>
+  </div>
+<% end %>

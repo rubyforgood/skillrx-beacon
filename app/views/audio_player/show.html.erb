@@ -1,0 +1,124 @@
+<div class="max-w-4xl mx-auto" data-controller="audio-player">
+  <%= render "shared/navigation" %>
+
+  <div class="mt-6">
+    <%= link_to "&larr; Back to topic".html_safe, topic_path(@topic), class: "text-indigo-600 hover:text-indigo-800 text-sm" %>
+
+    <div class="bg-white shadow rounded-lg mt-4 overflow-hidden">
+      <!-- Topic info header -->
+      <div class="p-6 border-b">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="flex items-center text-sm text-gray-500 mb-2">
+              <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-medium">
+                <%= @topic.content_provider.name %>
+              </span>
+              <span class="mx-2">|</span>
+              <span><%= @topic.year %> - <%= @topic.month %></span>
+            </div>
+            <h1 class="text-xl font-bold text-gray-900"><%= @topic.title %></h1>
+            <% if @topic.authors.any? %>
+              <p class="text-gray-600 mt-1"><%= @topic.authors.map(&:name).join(", ") %></p>
+            <% end %>
+          </div>
+
+          <% if user_signed_in? %>
+            <div id="favorite_button_<%= @topic.id %>">
+              <%= render "topics/favorite_button", topic: @topic, is_favorite: @is_favorite %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Audio player -->
+      <div class="p-6 bg-gray-900">
+        <div class="text-center mb-4">
+          <p class="text-gray-400 text-sm"><%= @topic_file.filename %></p>
+        </div>
+
+        <!-- Loading indicator -->
+        <div data-audio-player-target="loading" class="flex justify-center py-8">
+          <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+
+        <!-- Player controls -->
+        <div data-audio-player-target="controls" class="hidden">
+          <audio
+            data-audio-player-target="audio"
+            data-action="loadedmetadata->audio-player#loaded timeupdate->audio-player#updateProgress ended->audio-player#ended"
+            preload="metadata"
+          >
+            <% if @topic_file.file.attached? %>
+              <source src="<%= rails_blob_path(@topic_file.file, disposition: "inline") %>" type="audio/mpeg">
+            <% end %>
+            Your browser does not support the audio element.
+          </audio>
+
+          <!-- Play/Pause button -->
+          <div class="flex justify-center mb-6">
+            <button
+              data-audio-player-target="playButton"
+              data-action="click->audio-player#togglePlay"
+              class="w-16 h-16 rounded-full bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+            >
+              <!-- Play icon -->
+              <svg data-audio-player-target="playIcon" class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <!-- Pause icon -->
+              <svg data-audio-player-target="pauseIcon" class="w-8 h-8 text-white hidden" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="mb-4">
+            <div
+              data-audio-player-target="progressBar"
+              data-action="click->audio-player#seek"
+              class="h-2 bg-gray-700 rounded-full cursor-pointer"
+            >
+              <div
+                data-audio-player-target="progress"
+                class="h-full bg-indigo-500 rounded-full transition-all"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Time display -->
+          <div class="flex justify-between text-sm text-gray-400">
+            <span data-audio-player-target="currentTime">0:00</span>
+            <span data-audio-player-target="duration">0:00</span>
+          </div>
+
+          <!-- Volume control -->
+          <div class="flex items-center justify-center mt-6 space-x-4">
+            <button data-action="click->audio-player#toggleMute" class="text-gray-400 hover:text-white">
+              <svg data-audio-player-target="volumeIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+              <svg data-audio-player-target="muteIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value="100"
+              data-audio-player-target="volumeSlider"
+              data-action="input->audio-player#changeVolume"
+              class="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

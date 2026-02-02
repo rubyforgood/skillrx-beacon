@@ -1,0 +1,76 @@
+<div class="max-w-4xl mx-auto">
+  <%= render "shared/navigation" %>
+
+  <div class="mt-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Search</h1>
+
+    <!-- Search form with autocomplete -->
+    <div data-controller="autocomplete" data-autocomplete-url-value="<%= search_autocomplete_path %>">
+      <%= form_with url: search_path, method: :get, class: "relative" do |f| %>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <%= f.text_field :q,
+              value: @query,
+              class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg",
+              placeholder: "Search topics, tags, or authors...",
+              autocomplete: "off",
+              data: {
+                autocomplete_target: "input",
+                action: "input->autocomplete#search keydown->autocomplete#navigate"
+              } %>
+        </div>
+
+        <!-- Autocomplete suggestions dropdown -->
+        <div
+          data-autocomplete-target="results"
+          class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg hidden"
+        ></div>
+      <% end %>
+    </div>
+
+    <!-- Search results -->
+    <% if @query.present? %>
+      <div class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900">
+            Search results for "<%= @query %>"
+          </h2>
+          <span class="text-sm text-gray-500">
+            <%= @topics&.count || 0 %> results
+          </span>
+        </div>
+
+        <% if @topics&.any? %>
+          <div class="space-y-4">
+            <% @topics.each do |topic| %>
+              <%= render "topics/topic_card", topic: topic, show_favorite: true %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-12 bg-white rounded-lg shadow">
+            <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-gray-500">No results found for "<%= @query %>"</p>
+            <p class="text-gray-400 text-sm mt-1">Try different keywords or check your spelling.</p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Search suggestions when no query -->
+      <div class="mt-8">
+        <h3 class="text-sm font-medium text-gray-500 mb-4">Popular Tags</h3>
+        <div class="flex flex-wrap gap-2">
+          <% Tag.joins(:topics).group("tags.id").order("COUNT(topics.id) DESC").limit(20).each do |tag| %>
+            <%= link_to tag.name, search_path(q: tag.name),
+                class: "px-3 py-1 bg-gray-100 hover:bg-indigo-100 text-gray-700 hover:text-indigo-700 rounded-full text-sm" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,259 @@
+<div class="space-y-6">
+  <!-- Header with Period Selector -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-500">Period:</span>
+      <% [ 7, 30, 90 ].each do |days| %>
+        <%= link_to "#{days} days",
+            admin_root_path(period: days),
+            class: "px-3 py-1 text-sm rounded-md #{@period == days ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Overview Cards -->
+  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <%= render "admin/dashboard/stat_card", icon: "users", label: "Total Users", value: @overview[:total_users], color: "indigo" %>
+    <%= render "admin/dashboard/stat_card", icon: "document", label: "Topics", value: @overview[:total_topics], color: "blue" %>
+    <%= render "admin/dashboard/stat_card", icon: "file", label: "Media Files", value: @overview[:total_files], color: "green" %>
+    <%= render "admin/dashboard/stat_card", icon: "heart", label: "Favorites", value: @overview[:total_favorites], color: "red" %>
+  </div>
+
+  <!-- Activity Summary Cards -->
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Activity Summary (Last <%= @period %> Days)</h2>
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900"><%= @activity_summary[:total_activities] %></div>
+        <div class="text-xs text-gray-500">Total Activities</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-indigo-600"><%= @activity_summary[:logins] %></div>
+        <div class="text-xs text-gray-500">Logins</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-blue-600"><%= @activity_summary[:views] %></div>
+        <div class="text-xs text-gray-500">Topic Views</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-green-600"><%= @activity_summary[:searches] %></div>
+        <div class="text-xs text-gray-500">Searches</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-red-600"><%= @activity_summary[:favorites] %></div>
+        <div class="text-xs text-gray-500">Favorites Added</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-600"><%= @activity_summary[:unfavorites] %></div>
+        <div class="text-xs text-gray-500">Unfavorited</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-purple-600"><%= @activity_summary[:unique_users] %></div>
+        <div class="text-xs text-gray-500">Active Users</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Activity Chart -->
+  <% if @logins_per_day.any? %>
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Login Activity</h2>
+      <div class="h-40 flex items-end space-x-1">
+        <% max_logins = [ @logins_per_day.values.max || 1, 1 ].max %>
+        <% @logins_per_day.each do |date, count| %>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full bg-indigo-500 rounded-t"
+                 style="height: <%= (count.to_f / max_logins * 100).round %>%"
+                 title="<%= date.strftime('%b %d') %>: <%= count %> logins"></div>
+            <div class="text-xs text-gray-400 mt-1 transform -rotate-45 origin-top-left whitespace-nowrap">
+              <%= date.strftime('%m/%d') %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Top Users -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Top Active Users</h3>
+      </div>
+      <ul class="divide-y divide-gray-200">
+        <% @top_users.each_with_index do |user, index| %>
+          <li class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-medium
+                           <%= index < 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600' %>">
+                <%= index + 1 %>
+              </span>
+              <span class="ml-3 text-sm font-medium text-gray-900">
+                <%= user.first_name %> <%= user.last_name %>
+              </span>
+            </div>
+            <span class="text-sm text-gray-500"><%= user.activity_count %> activities</span>
+          </li>
+        <% end %>
+        <% if @top_users.empty? %>
+          <li class="px-4 py-8 text-center text-gray-500 text-sm">No activity recorded yet</li>
+        <% end %>
+      </ul>
+    </div>
+
+    <!-- Hot Topics -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Most Viewed Topics</h3>
+      </div>
+      <ul class="divide-y divide-gray-200">
+        <% @hot_topics.each_with_index do |topic, index| %>
+          <li class="px-4 py-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center min-w-0 flex-1">
+                <span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-medium
+                             <%= index < 3 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600' %>">
+                  <%= index + 1 %>
+                </span>
+                <div class="ml-3 truncate">
+                  <p class="text-sm font-medium text-gray-900 truncate"><%= topic.title %></p>
+                  <p class="text-xs text-gray-500"><%= topic.content_provider&.name %> | <%= topic.year %></p>
+                </div>
+              </div>
+              <span class="ml-2 flex items-center text-sm text-gray-500">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <%= topic.view_count %>
+              </span>
+            </div>
+          </li>
+        <% end %>
+        <% if @hot_topics.empty? %>
+          <li class="px-4 py-8 text-center text-gray-500 text-sm">No topics yet</li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Popular Searches -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Popular Searches</h3>
+      </div>
+      <div class="p-4">
+        <% if @popular_searches.any? %>
+          <div class="flex flex-wrap gap-2">
+            <% max_count = @popular_searches.values.max || 1 %>
+            <% @popular_searches.each do |term, count| %>
+              <% size = ((count.to_f / max_count) * 100).round %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm
+                           <%= size > 66 ? 'bg-indigo-100 text-indigo-800 font-medium' : size > 33 ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-600' %>">
+                <%= term %>
+                <span class="ml-1 text-xs opacity-70">(<%= count %>)</span>
+              </span>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-center text-gray-500 text-sm py-4">No searches recorded yet</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Failed Searches -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Searches with No Results</h3>
+        <p class="text-xs text-gray-500 mt-1">Consider adding content for these terms</p>
+      </div>
+      <div class="p-4">
+        <% if @failed_searches.any? %>
+          <ul class="space-y-2">
+            <% @failed_searches.each do |term, count| %>
+              <li class="flex items-center justify-between text-sm">
+                <span class="text-gray-900"><%= term %></span>
+                <span class="text-red-600"><%= count %> failed</span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-center text-gray-500 text-sm py-4">No failed searches</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content by Provider -->
+  <% if @content_by_provider.any? %>
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Content by Provider</h2>
+      <div class="space-y-3">
+        <% total = @content_by_provider.values.sum %>
+        <% @content_by_provider.each do |provider, count| %>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="font-medium text-gray-700"><%= provider %></span>
+              <span class="text-gray-500"><%= count %> topics (<%= (count.to_f / total * 100).round(1) %>%)</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= (count.to_f / total * 100).round %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Recent Activity -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 border-b border-gray-200 flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
+      <%= link_to "View All", admin_activity_log_path, class: "text-sm text-indigo-600 hover:text-indigo-800" %>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Details</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @recent_activities.each do |activity| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                <%= time_ago_in_words(activity.created_at) %> ago
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= activity.user&.first_name %> <%= activity.user&.last_name %>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <%= render "admin/dashboard/activity_badge", action_type: activity.action_type %>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-500 truncate max-w-xs">
+                <% if activity.topic %>
+                  <%= activity.topic.title %>
+                <% elsif activity.search_term.present? %>
+                  "<%= activity.search_term %>"
+                  <% unless activity.search_found %>
+                    <span class="text-red-500">(no results)</span>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @recent_activities.empty? %>
+            <tr>
+              <td colspan="4" class="px-4 py-8 text-center text-gray-500">No activity recorded yet</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
