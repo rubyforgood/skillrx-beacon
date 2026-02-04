@@ -21,11 +21,11 @@ RUN gem install bundler
     
 WORKDIR /app
 
-# Copy Gemfile and install gems
+# Copy only Gemfile (lock file will be generated at runtime)
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
-# Copy application code
+# Copy application code (will be mounted via volume in dev)
 COPY . .
 
 # Expose default rails port
