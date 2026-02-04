@@ -1,0 +1,15 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        RUBY_VERSION: 4.0.1
+    environment:
+      RAILS_ENV: test
+      DOCKER_CONTAINER: "true"
+    volumes:
+      - ./:/app
+    tty: true
+    stdin_open: true
+    command: ["/bin/bash"]
