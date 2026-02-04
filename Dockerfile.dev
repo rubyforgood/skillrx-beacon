@@ -1,0 +1,35 @@
+# Development Dockerfile for Rails app using sqlite on Alpine
+FROM docker.io/library/ruby:4.0.1-alpine
+
+ENV RAILS_ENV=development
+
+# Install build and runtime dependencies (no Node)
+RUN apk add --no-cache \
+build-base \
+    curl \
+    bash \
+    git \
+    imagemagick \
+    sqlite \
+    sqlite-dev \
+    yaml-dev \
+    tzdata
+    
+    
+# Install latest bundler
+RUN gem install bundler
+    
+WORKDIR /app
+
+# Copy Gemfile and install gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Copy application code
+COPY . .
+
+# Expose default rails port
+EXPOSE 3000
+
+# Default to an interactive shell; compose overrides command to run the server.
+CMD ["/bin/bash"]

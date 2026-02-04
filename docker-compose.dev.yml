@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        RUBY_VERSION: 4.0.1
+    environment:
+      RAILS_ENV: ${RAILS_ENV:-development}
+      DOCKER_CONTAINER: "true"
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    tty: true
+    stdin_open: true
+    command: ["/bin/bash", "-lc", "bin/rails server -b 0.0.0.0"]
