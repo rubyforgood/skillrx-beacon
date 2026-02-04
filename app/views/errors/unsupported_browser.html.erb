@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browser Not Supported - SkillRx Beacon</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 500px;
+      text-align: center;
+      padding: 2rem;
+    }
+    .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      color: #9ca3af;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+    .browsers {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .browser {
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      color: #374151;
+      font-size: 0.875rem;
+    }
+    .browser:hover {
+      background: #f9fafb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h1>Browser Not Supported</h1>
+    <p>
+      Internet Explorer is not supported. Please use a modern browser for the best experience.
+    </p>
+    <div class="browsers">
+      <a href="https://www.google.com/chrome/" class="browser">Google Chrome</a>
+      <a href="https://www.mozilla.org/firefox/" class="browser">Mozilla Firefox</a>
+      <a href="https://www.microsoft.com/edge" class="browser">Microsoft Edge</a>
+      <a href="https://www.apple.com/safari/" class="browser">Safari</a>
+    </div>
+  </div>
+</body>
+</html>

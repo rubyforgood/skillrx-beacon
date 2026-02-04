@@ -1,0 +1,22 @@
+<%# locals: (action_type:) %>
+<%
+  badge_config = case action_type
+  when "login"
+    { bg: "bg-indigo-100", text: "text-indigo-800", label: "Login" }
+  when "view"
+    { bg: "bg-blue-100", text: "text-blue-800", label: "View" }
+  when "search"
+    { bg: "bg-green-100", text: "text-green-800", label: "Search" }
+  when "favorite"
+    { bg: "bg-red-100", text: "text-red-800", label: "Favorite" }
+  when "unfavorite"
+    { bg: "bg-gray-100", text: "text-gray-800", label: "Unfavorite" }
+  when "view_local_file"
+    { bg: "bg-purple-100", text: "text-purple-800", label: "Local File" }
+  else
+    { bg: "bg-gray-100", text: "text-gray-800", label: action_type&.humanize || "Unknown" }
+  end
+%>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= badge_config[:bg] %> <%= badge_config[:text] %>">
+  <%= badge_config[:label] %>
+</span>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Admin - SkillRx Beacon" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-100">
+    <% if admin_signed_in? %>
+      <nav class="bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <span class="text-white font-bold text-xl">SkillRx Admin</span>
+              </div>
+              <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                  <%= link_to "Dashboard", admin_root_path,
+                      class: "#{request.path == admin_root_path ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium" %>
+                  <%= link_to "Local Files", admin_local_files_path,
+                      class: "#{request.path.start_with?('/admin/local_files') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium" %>
+                  <%= link_to "User Activity", admin_activity_log_path,
+                      class: "#{request.path == admin_activity_log_path ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium" %>
+                  <%= link_to "Admin Activity", admin_admin_log_path,
+                      class: "#{request.path == admin_admin_log_path ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'} px-3 py-2 rounded-md text-sm font-medium" %>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-300 text-sm mr-4">
+                <%= current_admin.first_name %> <%= current_admin.last_name %>
+              </span>
+              <%= button_to "Logout", admin_logout_path,
+                  method: :delete,
+                  class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+
+    <main class="<%= admin_signed_in? ? 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8' : '' %>">
+      <% if flash[:notice] %>
+        <div class="rounded-md bg-green-50 p-4 mb-4">
+          <p class="text-sm text-green-700"><%= flash[:notice] %></p>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] && !action_name.in?(%w[new create]) %>
+        <div class="rounded-md bg-red-50 p-4 mb-4">
+          <p class="text-sm text-red-700"><%= flash[:alert] %></p>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>

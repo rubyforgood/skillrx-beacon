@@ -1,0 +1,106 @@
+#!/bin/bash
+#
+# Production Setup Script for SkillRx Beacon
+#
+# This script sets up the application for production deployment
+# on a Raspberry Pi or similar mini computer.
+#
+# Usage:
+#   ./bin/setup-production
+#
+# Prerequisites:
+#   - Ruby 4.0+ installed (via rbenv, asdf, or system)
+#   - SQLite3 installed
+#   - Node.js installed (for asset compilation)
+
+set -e
+
+APP_DIR="/opt/skillrx"
+CURRENT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+echo "=== SkillRx Beacon Production Setup ==="
+echo ""
+
+# Check if running as root for system-level setup
+if [ "$EUID" -eq 0 ]; then
+  echo "Creating skillrx user..."
+  if ! id -u skillrx >/dev/null 2>&1; then
+    useradd --system --home-dir "$APP_DIR" --shell /bin/bash skillrx
+  fi
+
+  echo "Creating application directory..."
+  mkdir -p "$APP_DIR"
+  mkdir -p "$APP_DIR/storage"
+  mkdir -p "$APP_DIR/log"
+  mkdir -p "$APP_DIR/tmp/pids"
+  mkdir -p "$APP_DIR/content"
+
+  echo "Copying application files..."
+  rsync -av --exclude='.git' --exclude='storage/*.sqlite3' --exclude='log/*' \
+    --exclude='tmp/*' --exclude='node_modules' \
+    "$CURRENT_DIR/" "$APP_DIR/"
+
+  echo "Setting permissions..."
+  chown -R skillrx:skillrx "$APP_DIR"
+  chmod 750 "$APP_DIR"
+  chmod -R 755 "$APP_DIR/bin"
+
+  echo "Installing systemd service..."
+  cp "$APP_DIR/config/skillrx.service" /etc/systemd/system/
+  systemctl daemon-reload
+  systemctl enable skillrx
+
+  echo ""
+  echo "System setup complete!"
+  echo ""
+  echo "Next steps (run as skillrx user):"
+  echo "  1. cd $APP_DIR"
+  echo "  2. Create .env file with RAILS_MASTER_KEY"
+  echo "  3. Run: bundle install --deployment --without development test"
+  echo "  4. Run: bin/rails db:prepare RAILS_ENV=production"
+  echo "  5. Run: bin/rails assets:precompile RAILS_ENV=production"
+  echo "  6. Run: bin/rails data:import_content RAILS_ENV=production"
+  echo "  7. Start service: sudo systemctl start skillrx"
+  echo ""
+  exit 0
+fi
+
+# Non-root setup (application-level)
+echo "Running application setup..."
+
+# Install dependencies
+echo "Installing gems..."
+bundle config set --local deployment true
+bundle config set --local without 'development test'
+bundle install
+
+# Generate credentials if not present
+if [ ! -f "config/master.key" ]; then
+  echo "Generating new credentials..."
+  EDITOR="cat" bin/rails credentials:edit
+  echo ""
+  echo "IMPORTANT: Save the master.key file securely!"
+  echo "  Location: config/master.key"
+  echo ""
+fi
+
+# Prepare database
+echo "Preparing database..."
+bin/rails db:prepare RAILS_ENV=production
+
+# Precompile assets
+echo "Precompiling assets..."
+bin/rails assets:precompile RAILS_ENV=production
+
+# Create necessary directories
+mkdir -p storage log tmp/pids
+
+echo ""
+echo "Application setup complete!"
+echo ""
+echo "To start the server:"
+echo "  bin/rails server -e production -b 0.0.0.0 -p 3000"
+echo ""
+echo "Or with systemd (as root):"
+echo "  sudo systemctl start skillrx"
+echo ""

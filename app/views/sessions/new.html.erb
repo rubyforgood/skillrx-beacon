@@ -1,0 +1,42 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Sign in to your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Or
+        <%= link_to "create a new account", signup_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+      </p>
+    </div>
+
+    <%= form_with url: login_path, method: :post, class: "mt-8 space-y-6" do |f| %>
+      <% if flash[:alert] %>
+        <div class="rounded-md bg-red-50 p-4">
+          <p class="text-sm text-red-700"><%= flash[:alert] %></p>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :login_id, "Login ID", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= f.text_field :login_id,
+              class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+              placeholder: "firstname.lastname",
+              autofocus: true,
+              required: true %>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Enter your login ID (e.g., john.doe)</p>
+      </div>
+
+      <div>
+        <%= f.submit "Sign in",
+            class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
+      </div>
+    <% end %>
+
+    <div class="text-center">
+      <%= link_to "Admin Login", admin_login_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+    </div>
+  </div>
+</div>

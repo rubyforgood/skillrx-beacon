@@ -1,0 +1,47 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+        Admin Login
+      </h2>
+    </div>
+
+    <%= form_with url: admin_login_path, method: :post, class: "mt-8 space-y-6" do |f| %>
+      <% if flash[:alert] %>
+        <div class="rounded-md bg-red-900 p-4">
+          <p class="text-sm text-red-200"><%= flash[:alert] %></p>
+        </div>
+      <% end %>
+
+      <div class="space-y-4">
+        <div>
+          <%= f.label :login_id, "Login ID", class: "block text-sm font-medium text-gray-300" %>
+          <div class="mt-1">
+            <%= f.text_field :login_id,
+                class: "appearance-none block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+                autofocus: true,
+                required: true %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :password, class: "block text-sm font-medium text-gray-300" %>
+          <div class="mt-1">
+            <%= f.password_field :password,
+                class: "appearance-none block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
+                required: true %>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <%= f.submit "Sign in",
+            class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
+      </div>
+    <% end %>
+
+    <div class="text-center">
+      <%= link_to "Back to User Login", login_path, class: "text-sm text-gray-400 hover:text-gray-200" %>
+    </div>
+  </div>
+</div>

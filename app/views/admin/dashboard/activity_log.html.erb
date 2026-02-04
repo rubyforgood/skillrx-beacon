@@ -1,0 +1,69 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-900">User Activity Log</h1>
+    <%= link_to "Back to Dashboard", admin_root_path, class: "text-sm text-indigo-600 hover:text-indigo-800" %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Details</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Browser</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">OS</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @activities.each do |activity| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                <%= activity.created_at.strftime("%b %d, %Y %I:%M %p") %>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= activity.user&.first_name %> <%= activity.user&.last_name %>
+                <div class="text-xs text-gray-500"><%= activity.user&.login_id %></div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <%= render "admin/dashboard/activity_badge", action_type: activity.action_type %>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-500 max-w-xs truncate">
+                <% if activity.topic %>
+                  <span class="font-medium"><%= activity.topic.title %></span>
+                  <% if activity.file_type.present? %>
+                    <span class="text-xs text-gray-400">(<%= activity.file_type %>)</span>
+                  <% end %>
+                <% elsif activity.search_term.present? %>
+                  "<%= activity.search_term %>"
+                  <% if activity.search_found %>
+                    <span class="text-green-600 text-xs">(found)</span>
+                  <% else %>
+                    <span class="text-red-600 text-xs">(no results)</span>
+                  <% end %>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                <%= activity.browser %>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                <%= activity.os %>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                <%= activity.ip_address %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @activities.empty? %>
+            <tr>
+              <td colspan="7" class="px-4 py-8 text-center text-gray-500">No activity recorded yet</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

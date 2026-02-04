@@ -1,0 +1,35 @@
+<div class="max-w-7xl mx-auto">
+  <%= render "shared/navigation" %>
+
+  <div class="mt-6">
+    <%= link_to "&larr; Back to browsing".html_safe, root_path, class: "text-indigo-600 hover:text-indigo-800 text-sm" %>
+
+    <div class="bg-white shadow rounded-lg p-6 mt-4">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+          <svg class="w-6 h-6 text-red-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <h1 class="text-xl font-semibold text-gray-900">My Favorites</h1>
+        </div>
+        <span class="text-sm text-gray-500"><%= @topics.count %> topics</span>
+      </div>
+
+      <div class="space-y-4">
+        <% @topics.each do |topic| %>
+          <%= render "topics/topic_card", topic: topic, show_favorite: true %>
+        <% end %>
+      </div>
+
+      <% if @topics.empty? %>
+        <div class="text-center py-8">
+          <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          <p class="text-gray-500">You haven't added any favorites yet.</p>
+          <p class="text-gray-400 text-sm mt-1">Click the heart icon on any topic to add it to your favorites.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

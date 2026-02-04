@@ -1,0 +1,61 @@
+# systemd service file for SkillRx Beacon
+#
+# Installation:
+#   sudo cp config/skillrx.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable skillrx
+#   sudo systemctl start skillrx
+#
+# Commands:
+#   sudo systemctl status skillrx    # Check status
+#   sudo systemctl restart skillrx   # Restart service
+#   sudo journalctl -u skillrx -f    # View logs
+
+[Unit]
+Description=SkillRx Beacon - Medical Content Application
+Documentation=https://github.com/RubyForGood/skillrx-beacon
+After=network.target
+
+[Service]
+Type=simple
+User=skillrx
+Group=skillrx
+
+# Application directory
+WorkingDirectory=/opt/skillrx
+
+# Environment variables
+Environment=RAILS_ENV=production
+Environment=RAILS_LOG_TO_STDOUT=1
+Environment=RAILS_SERVE_STATIC_FILES=1
+Environment=SOLID_QUEUE_IN_PUMA=1
+Environment=PORT=3000
+Environment=PIDFILE=/opt/skillrx/tmp/pids/server.pid
+
+# Read secret key from environment file
+EnvironmentFile=-/opt/skillrx/.env
+
+# Start command
+ExecStart=/opt/skillrx/bin/rails server -b 0.0.0.0 -p 3000
+
+# Graceful shutdown
+ExecStop=/bin/kill -SIGTERM $MAINPID
+TimeoutStopSec=30
+
+# Restart policy
+Restart=always
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/skillrx/storage /opt/skillrx/log /opt/skillrx/tmp
+
+# Resource limits (suitable for Raspberry Pi)
+MemoryMax=512M
+TasksMax=50
+
+[Install]
+WantedBy=multi-user.target
