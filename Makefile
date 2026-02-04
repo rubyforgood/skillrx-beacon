@@ -77,10 +77,10 @@ import:
 
 # Development commands
 test:
-	bundle exec rspec
+	bin/rspec
 
 lint:
-	bundle exec rubocop
+	bin/rubocop
 
 clean:
 	rm -rf log/*.log tmp/cache tmp/pids tmp/sockets
