@@ -30,7 +30,7 @@ class ContentXmlParser < XmlParser
         issue: title_node.at_xpath("topic_issue")&.text&.strip,
         files: parse_files(title_node),
         authors: parse_authors(title_node),
-        tags: parse_tags(title_node)
+        tags: parse_tags(title_node),
       }
     end
 
@@ -57,7 +57,7 @@ class ContentXmlParser < XmlParser
       files << {
         filename: filename,
         file_size: file_node["file_size"]&.to_i,
-        file_type: determine_file_type(filename)
+        file_type: determine_file_type(filename),
       }
     end
 
