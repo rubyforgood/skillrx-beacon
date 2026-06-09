@@ -13,7 +13,7 @@ class ContentImporter
       files: { created: 0 },
       authors: { created: 0 },
       tags: { created: 0 },
-      errors: []
+      errors: [],
     }
 
     parsed_content.each do |provider_data|
