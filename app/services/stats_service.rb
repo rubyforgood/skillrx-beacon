@@ -13,7 +13,7 @@ class StatsService
       total_authors: Author.count,
       total_tags: Tag.count,
       total_favorites: Favorite.count,
-      total_local_files: LocalFile.count
+      total_local_files: LocalFile.count,
     }
   end
 
@@ -28,7 +28,7 @@ class StatsService
       searches: base_query.searches.count,
       favorites: base_query.favorites.count,
       unfavorites: base_query.unfavorites.count,
-      unique_users: base_query.distinct.count(:user_id)
+      unique_users: base_query.distinct.count(:user_id),
     }
   end
 
@@ -146,7 +146,7 @@ class StatsService
   # No string interpolation - each column has a literal SQL expression
   DATE_SQL_EXPRESSIONS = {
     "created_at" => Arel.sql("DATE(created_at)"),
-    "updated_at" => Arel.sql("DATE(updated_at)")
+    "updated_at" => Arel.sql("DATE(updated_at)"),
   }.freeze
 
   def date_sql_for_column(column)
@@ -162,7 +162,7 @@ module GroupByDayExtension
   # Pre-defined SQL expressions for allowed columns (no interpolation)
   DATE_SQL_EXPRESSIONS = {
     "created_at" => Arel.sql("DATE(created_at)"),
-    "updated_at" => Arel.sql("DATE(updated_at)")
+    "updated_at" => Arel.sql("DATE(updated_at)"),
   }.freeze
 
   def group_by_day(column)

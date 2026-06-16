@@ -6,7 +6,7 @@ class UsersXmlParser < XmlParser
         last_name: node.at_xpath("USER_LNAME")&.text&.strip,
         login_id: node.at_xpath("USER_ID")&.text&.strip&.downcase,
         login_count: node.at_xpath("LOGIN_COUNTER")&.text&.to_i || 0,
-        favorites: parse_favorites(node.at_xpath("FAVOURITE")&.text)
+        favorites: parse_favorites(node.at_xpath("FAVOURITE")&.text),
       }
     end
   end
